@@ -35,23 +35,10 @@ def data_transforms(load_size=256, input_size=224):
     return data_transforms
 
 
-def copy_files(src, dst, ignores=[]):
-    src_files = os.listdir(src)
-    for file_name in src_files:
-        ignore_check = [True for i in ignores if i in file_name]
-        if ignore_check:
-            continue
-        full_file_name = os.path.join(src, file_name)
-        if os.path.isfile(full_file_name):
-            shutil.copy(full_file_name, os.path.join(dst,file_name))
-        if os.path.isdir(full_file_name):
-            os.makedirs(os.path.join(dst, file_name), exist_ok=True)
-            copy_files(full_file_name, os.path.join(dst, file_name), ignores)
-
 def get_args():
 
     parser = argparse.ArgumentParser(description='CLASSIFICATION')
-    parser.add_argument('--dataset_path', default=r'D:\Dataset\BOE_HKC_WHTM_210113\BOE_HKC_WHTM_210205') #D:\Dataset\BOE_B11\BOE_B11_20191028_Evaluation_image_original_crop_2\dataset_1_512_jpg')
+    parser.add_argument('--dataset_path', default=r'/home/changwoo/hdd/datasets/REVIEW_BOE_HKC_WHTM/BOE_HKC_WHTM_210219') #D:\Dataset\BOE_B11\BOE_B11_20191028_Evaluation_image_original_crop_2\dataset_1_512_jpg')
     parser.add_argument('--num_epoch', default=1)
     parser.add_argument('--lr', default=0.0001, type=float)
     parser.add_argument('--batch_size', default=8)
