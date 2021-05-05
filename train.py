@@ -39,20 +39,21 @@ def get_args():
 
     parser = argparse.ArgumentParser(description='CLASSIFICATION')
     parser.add_argument('--dataset_path', default=r'/home/changwoo/hdd/datasets/REVIEW_BOE_HKC_WHTM/BOE_HKC_WHTM_210219') #D:\Dataset\BOE_B11\BOE_B11_20191028_Evaluation_image_original_crop_2\dataset_1_512_jpg')
-    parser.add_argument('--num_epoch', default=1)
+    parser.add_argument('--num_epoch', default=1, type=int)
     parser.add_argument('--lr', default=0.0001, type=float)
-    parser.add_argument('--batch_size', default=8)
+    parser.add_argument('--batch_size', default=8, type=int)
     parser.add_argument('--load_size', default=256)
     parser.add_argument('--input_size', default=224)
     parser.add_argument('--use_batchnorm', default=False)
+    parser.add_argument('--exp_name', default='Default')
     args = parser.parse_args()
     return args
 
 def fit():
-    for epoch in range(num_epochs):
+    for epoch in range(num_epoch):
         print('-'*20)
         print('Time consumed : {}s'.format(time.time()-start_time))
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+        print('Epoch {}/{}'.format(epoch, num_epoch - 1))
         print('Dataset size : Train set - {}, Validation set - {}'.format(dataset_sizes['train'],dataset_sizes['val']))
         print('-'*20)
         
@@ -88,6 +89,8 @@ def fit():
 
                 if idx%10 == 0:
                     print('Epoch : {} | Loss : {:.4f}'.format(epoch, float(loss.data)))
+                    # break for fast test (temp)
+                    break
 
             if phase == 'val':
                 cr = classification_report(label_list, pred_list, output_dict=True)
@@ -104,7 +107,7 @@ if __name__ == '__main__':
     print(torch.cuda.get_device_name(device))
     
     args = get_args()
-    num_epochs = args.num_epoch
+    num_epoch = args.num_epoch
     lr = args.lr
     batch_size = args.batch_size
     load_size = args.load_size
@@ -133,7 +136,10 @@ if __name__ == '__main__':
     cr = fit()
     
     print('Time : {}'.format(time.time() - start_time))
-        
+
+    # Set an experiment name, which must be unique and case sensitive.
+    mlflow.set_experiment(args.exp_name)
+
     with mlflow.start_run() as run:
         mlflow.pytorch.log_model(model, "model")
         # convert to scripted model and log the model
@@ -141,7 +147,7 @@ if __name__ == '__main__':
         mlflow.pytorch.log_model(scripted_pytorch_model, "scripted_model")
         mlflow.log_param("learning_rate", lr)
         mlflow.log_param("batch_size", batch_size)
-        mlflow.log_param("num_epochs", num_epochs)
+        mlflow.log_param("num_epoch", num_epoch)
         mlflow.log_metric("precision",cr['accuracy'])
         mlflow.log_metric("precision",cr['weighted avg']['precision'])
         mlflow.log_metric("recall",cr['weighted avg']['recall'])
@@ -155,6 +161,7 @@ if __name__ == '__main__':
     
     # Generate conda env yaml file
     env = mlflow.pytorch.get_default_conda_env()
+    env['dependencies'][-1]['pip'].append('scikit-learn==0.24.1')
     print("conda env: {}".format(env))
     with open('conda.yaml', 'w') as f:
         yaml.dump(env, f)

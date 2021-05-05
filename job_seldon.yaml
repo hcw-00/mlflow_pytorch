@@ -8,7 +8,7 @@ spec:
   predictors:
   - graph:
       implementation: SKLEARN_SERVER
-      modelUri: gs://seldon-models/sklearn/iris
+      modelUri: file:///home/changwoo/hdd/repo/mlflow/mlflow_pytorch #gs://seldon-models/sklearn/iris
       name: classifier
     name: default
     replicas: 1

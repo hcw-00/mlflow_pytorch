@@ -2,7 +2,7 @@ artifact_uri: file:///home/changwoo/hdd/repo/mlflow/mlflow_pytorch/mlruns/0/dc9d
 end_time: 1620042870474
 entry_point_name: ''
 experiment_id: '0'
-lifecycle_stage: active
+lifecycle_stage: deleted
 name: ''
 run_id: dc9dd721e1094e24b1100f4f2910d4f7
 run_uuid: dc9dd721e1094e24b1100f4f2910d4f7
